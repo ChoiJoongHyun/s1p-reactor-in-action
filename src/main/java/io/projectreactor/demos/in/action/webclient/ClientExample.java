@@ -69,8 +69,20 @@ public class ClientExample {
 				);
 	}
 
+
 	@GetMapping(value = "/api/starwars/person")
 	public Flux<String> charInMoviesByName(@RequestParam String name) {
+		return findCharacters(name)
+				.flatMapSequential(json -> fetchMovieTitles(json)
+						.map(title -> title + "\n")
+						.startWith("Character " + json.get("name") +
+								" appears in movies:\n")
+						.concatWith(Mono.just("and that's it!\n\n"))
+				);
+	}
+
+	@GetMapping(value = "/api/starwars/person-s", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	public Flux<String> charInMoviesByName2(@RequestParam String name) {
 		return findCharacters(name)
 				.flatMapSequential(json -> fetchMovieTitles(json)
 						.map(title -> title + "\n")

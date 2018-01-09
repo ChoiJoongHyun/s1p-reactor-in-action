@@ -59,6 +59,19 @@ public class TestingTest {
 	}
 
 	@Test
+	public void namesPerSecondWithTime() {
+		StepVerifier.create(test.namesPerSecond()
+					.doOnNext(System.out::println))
+				.expectNext("Summer")
+				.thenAwait(Duration.ofSeconds(2))
+				.expectNextCount(2)
+				.thenAwait(Duration.ofMinutes(1))
+				.expectNext("Morty", "Rick", "Simon", "Victor")
+				.verifyComplete();
+	}
+
+
+	@Test
 	public void namesPerSecondWithoutTime() {
 		StepVerifier.withVirtualTime(() -> test.namesPerSecond()
 		                                       .doOnNext(System.out::println))
